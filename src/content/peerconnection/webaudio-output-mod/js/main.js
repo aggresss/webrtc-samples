@@ -124,6 +124,7 @@ function gotRemoteTrack(e) {
     const ms = new MediaStream([e.track]);
     // Chrome doesn't support remote audio streams in audio contexts.
     // So need a stub video element
+    // https://gist.github.com/daurnimator/7407782
     remoteVideo.srcObject = ms;
     const subStreamVisualizer = new StreamVisualizer(ms, canvas);
     subStreamVisualizer.start();
