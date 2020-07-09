@@ -23,25 +23,9 @@ const canvas = document.querySelector('canvas');
 
 let startTime;
 const localVideo = document.getElementById('localVideo');
-const remoteVideo = document.getElementById('remoteVideo');
 
 localVideo.addEventListener('loadedmetadata', () => {
   return console.log(`Local video videoWidth: ${this.videoWidth}px,  videoHeight: ${this.videoHeight}px`);
-});
-
-remoteVideo.addEventListener('loadedmetadata', () => {
-  return console.log(`Remote video videoWidth: ${this.videoWidth}px,  videoHeight: ${this.videoHeight}px`);
-});
-
-remoteVideo.addEventListener('resize', () => {
-  console.log(`Remote video size changed to ${remoteVideo.videoWidth}x${remoteVideo.videoHeight}`);
-  // We'll use the first onsize callback as an indication that video has started
-  // playing out.
-  if (startTime) {
-    const elapsedTime = window.performance.now() - startTime;
-    console.log(`Setup time: ${elapsedTime.toFixed(3)}ms`);
-    startTime = null;
-  }
 });
 
 let localStream;
@@ -49,7 +33,6 @@ let pc1;
 let pc2;
 const offerOptions = {
   offerToReceiveAudio: 1,
-  offerToReceiveVideo: 1
 };
 
 function getName(pc) {
@@ -84,11 +67,7 @@ function call() {
   hangupButton.disabled = false;
   console.log('Starting call');
   startTime = window.performance.now();
-  const videoTracks = localStream.getVideoTracks();
   const audioTracks = localStream.getAudioTracks();
-  if (videoTracks.length > 0) {
-    console.log(`Using video device: ${videoTracks[0].label}`);
-  }
   if (audioTracks.length > 0) {
     console.log(`Using audio device: ${audioTracks[0].label}`);
   }
@@ -101,7 +80,7 @@ function call() {
   pc2.onicecandidate = e => onIceCandidate(pc2, e);
   pc1.oniceconnectionstatechange = e => onIceStateChange(pc1, e);
   pc2.oniceconnectionstatechange = e => onIceStateChange(pc2, e);
-  pc2.ontrack = gotRemoteStream;
+  pc2.ontrack = gotRemoteTrack;
 
   localStream.getTracks().forEach(track => pc1.addTrack(track, localStream));
   console.log('Added local stream to pc1');
@@ -139,15 +118,13 @@ function onSetSessionDescriptionError(error) {
   console.log(`Failed to set session description: ${error.toString()}`);
 }
 
-function gotRemoteStream(e) {
-  if (remoteVideo.srcObject !== e.streams[0]) {
-    remoteVideo.srcObject = e.streams[0];
-    console.log('pc2 received remote stream');
-    const streamVisualizer = new StreamVisualizer(e.streams[0], canvas);
-    streamVisualizer.start();
+function gotRemoteTrack(e) {
+  if (e.track.kind == 'audio') {
+    const ms = new MediaStream([e.track]);
+    const subStreamVisualizer = new StreamVisualizer(ms, canvas);
+    subStreamVisualizer.start();
   }
 }
-
 
 function onCreateAnswerSuccess(desc) {
   console.log(`Answer from pc2:\n${desc.sdp}`);

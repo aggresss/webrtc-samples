@@ -30,10 +30,6 @@ video {
   margin: 0 20px 20px 0;
 }
 
-video#remoteVideo {
-  display: none;
-}
-
 @media screen and (max-width: 400px) {
   button {
     margin: 0 11px 10px 0;
