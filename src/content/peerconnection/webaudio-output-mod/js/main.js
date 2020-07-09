@@ -23,6 +23,7 @@ const canvas = document.querySelector('canvas');
 
 let startTime;
 const localVideo = document.getElementById('localVideo');
+const remoteVideo = document.getElementById('remoteVideo');
 
 localVideo.addEventListener('loadedmetadata', () => {
   return console.log(`Local video videoWidth: ${this.videoWidth}px,  videoHeight: ${this.videoHeight}px`);
@@ -121,6 +122,7 @@ function onSetSessionDescriptionError(error) {
 function gotRemoteTrack(e) {
   if (e.track.kind == 'audio') {
     const ms = new MediaStream([e.track]);
+    remoteVideo.srcObject = ms;
     const subStreamVisualizer = new StreamVisualizer(ms, canvas);
     subStreamVisualizer.start();
   }
