@@ -52,10 +52,6 @@ function getName(pc) {
   return (pc === pc1) ? 'pc1' : 'pc2';
 }
 
-function getOtherPc(pc) {
-  return (pc === pc1) ? pc2 : pc1;
-}
-
 async function start() {
   console.log('Requesting local stream');
   startButton.disabled = true;
