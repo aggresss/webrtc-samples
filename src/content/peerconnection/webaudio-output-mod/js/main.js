@@ -122,6 +122,8 @@ function onSetSessionDescriptionError(error) {
 function gotRemoteTrack(e) {
   if (e.track.kind == 'audio') {
     const ms = new MediaStream([e.track]);
+    // Chrome doesn't support remote audio streams in audio contexts.
+    // So need a stub video element
     remoteVideo.srcObject = ms;
     const subStreamVisualizer = new StreamVisualizer(ms, canvas);
     subStreamVisualizer.start();
